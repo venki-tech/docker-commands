@@ -246,3 +246,78 @@ docker network rm 6b68577b7175 9254ea53d9d2
 docker network create -d bridge --subnet 10.25.0.0/16 vv-network
 docker network inspect 2bae36943f5e
 ```
+
+## Docker volumes create 
+```
+docker volume create vvDockerVolume
+docker volume ls
+docker inspect vvDockerVolume
+```
+
+## Docker run with a persistent volume created above
+```
+docker run -it -d --name vv-centos-with-volumes -v vvDockerVolume:/opt 9f38484d220f 
+```
+
+## Docker volume remove
+```
+docker volume rm vvDockerVolume
+```
+
+## Create multiple volumes 
+```
+docker volume create vvVol1
+
+docker volume create vvVol2
+
+docker volume create vvVol3
+
+docker volume ls
+DRIVER              VOLUME NAME
+local               vvVol1
+local               vvVol2
+local               vvVol3
+```
+
+## Run a docker container with multiple volumes
+```
+docker run -it -d --name vv-centos-with-volumes-1 -v vvVol1:/opt -v vvVol2:/data 9f38484d220f 
+```
+
+## Run a docker with a directory in host as a volume
+
+### create a directory on host:
+```
+mkdir -p /root/vvMount
+```
+
+### run a docker container with above dir from host as the volume
+```
+docker run -it --name vv-centos-with-volumes-4 -v /root/vvMount:/root 9f38484d220f 
+```
+
+## create a EBS volume, attach it from aws console, then create a directory / mountpoint on the instance
+```
+mkdir /vvDockerMount/
+```
+
+### List the volumes to see if its present
+```
+lsblk
+```
+
+### make a fs with the above volume
+```
+mkfs.xfs /dev/xvdf 
+```
+
+### Create a FS with the mount point
+```
+mount /dev/xvdf /vvDockerMount/
+```
+
+### Run the docker container with the above created mount point
+```
+docker run -it --name vv-centos-with-volumes-1 -v /vvDockerMount:/root 9f38484d220f
+```
+
